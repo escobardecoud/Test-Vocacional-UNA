@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diseña tu futuro en la UNA</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f9fafb; /* Light gray background */
+        }
+        .main-color { color: #A92624; }
+        .bg-main-color { background-color: #A92624; }
+        .hover-bg-main-color:hover { background-color: #8e201e; }
+        .border-main-color { border-color: #A92624; }
+        
+        .custom-radio {
+            appearance: none;
+            -webkit-appearance: none;
+            width: 1.5rem;
+            height: 1.5rem;
+            border: 2px solid #d1d5db;
+            border-radius: 50%;
+            display: inline-block;
+            position: relative;
+            cursor: pointer;
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+        .custom-radio:checked {
+            border-color: #A92624;
+            background-color: #A92624;
+        }
+        .custom-radio:checked::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0.6rem;
+            height: 0.6rem;
+            border-radius: 50%;
+            background: white;
+            transform: translate(-50%, -50%);
+        }
+        .animate-fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        #career-modal {
+            transition: opacity 0.3s ease;
+        }
+    </style>
+</head>
+<body class="text-gray-800 flex items-center justify-center min-h-screen p-4">
+
+    <div id="app-container" class="w-full max-w-4xl mx-auto">
+
+        <!-- Welcome Screen -->
+        <div id="welcome-screen" class="bg-white p-8 rounded-xl shadow-lg text-center animate-fade-in">
+            <img src="https://i.imgur.com/enT97Pe.png" alt="Logo de la UNA" class="w-64 mx-auto mb-6">
+            <h1 class="text-3xl md:text-4xl font-bold main-color mb-2">Diseña tu futuro en la UNA</h1>
+            <h2 class="text-2xl font-semibold text-gray-700 mb-6">Test de orientación vocacional</h2>
+            <p class="text-gray-600 mb-6 max-w-2xl mx-auto">Este test te ayudará a explorar tus intereses, aptitudes y preferencias para brindarte una guía personalizada sobre las carreras de la Universidad Nacional de Asunción (UNA) que mejor se alinean contigo.</p>
+            <div class="text-left bg-gray-100 p-6 rounded-lg max-w-2xl mx-auto mb-8">
+                <h3 class="font-bold text-lg mb-3 text-gray-800">Instrucciones Generales:</h3>
+                <ul class="list-disc list-inside space-y-2 text-gray-600">
+                    <li><span class="font-semibold">Duración:</span> El test te tomará aproximadamente 10 minutos.</li>
+                    <li><span class="font-semibold">Entorno:</span> Busca un lugar tranquilo y sin distracciones.</li>
+                    <li><span class="font-semibold">Sinceridad:</span> No hay respuestas correctas o incorrectas. Responde con total honestidad.</li>
+                </ul>
+            </div>
+            <button id="start-btn" class="bg-main-color text-white font-bold py-3 px-8 rounded-lg hover-bg-main-color transition-transform transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-red-300">
+                Comenzar el Test
+            </button>
+        </div>
+
+        <!-- Test Screen -->
+        <div id="test-screen" class="hidden bg-white p-6 md:p-8 rounded-xl shadow-lg animate-fade-in">
+            <div class="mb-6">
+                <div class="flex justify-between items-center mb-2">
+                    <h2 id="module-title" class="text-xl md:text-2xl font-bold main-color"></h2>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2.5">
+                    <div id="progress-bar" class="bg-main-color h-2.5 rounded-full transition-all duration-500" style="width: 0%"></div>
+                </div>
+                <div id="progress-text" class="text-right text-sm text-gray-500 mt-1"></div>
+            </div>
+            <div id="question-container" class="mb-8"></div>
+            <div class="flex justify-between items-center">
+                <button id="prev-btn" class="bg-gray-300 text-gray-800 font-bold py-2 px-6 rounded-lg hover:bg-gray-400 transition">Anterior</button>
+                <button id="next-btn" class="bg-main-color text-white font-bold py-2 px-6 rounded-lg hover-bg-main-color transition">Siguiente</button>
+            </div>
+        </div>
+
+        <!-- Results Screen -->
+        <div id="results-screen" class="hidden bg-white p-6 md:p-8 rounded-xl shadow-lg animate-fade-in">
+             <div id="loading-results" class="text-center">
+                <h2 class="text-2xl font-semibold text-gray-700 mb-4">Analizando tu perfil y buscando carreras...</h2>
+                <div class="flex justify-center items-center">
+                    <svg class="animate-spin h-8 w-8 main-color" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                </div>
+            </div>
+            <div id="results-content" class="hidden">
+                 <h1 class="text-3xl md:text-4xl font-bold main-color mb-4 text-center">Tu Perfil Vocacional RIASEC</h1>
+                 <p class="text-center text-gray-600 mb-8 max-w-2xl mx-auto">A continuación se muestran los tres tipos de personalidad RIASEC más puntuados. Juntos, configuran un perfil vocacional que está asociado a las siguientes carreras de la UNA. Te invitamos a dar clic en cada carrera para acceder a más información.</p>
+                 <div id="riasec-results" class="space-y-6"></div>
+                 <div class="text-center mt-8">
+                     <button id="retake-btn" class="bg-main-color text-white font-bold py-3 px-8 rounded-lg hover-bg-main-color transition">Realizar el Test de Nuevo</button>
+                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Career Details Modal -->
+    <div id="career-modal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 hidden z-50">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto animate-fade-in">
+            <div class="sticky top-0 bg-white p-4 border-b flex justify-between items-center">
+                <h2 id="modal-title" class="text-2xl font-bold main-color"></h2>
+                <button id="modal-close-btn" class="text-gray-500 hover:text-gray-800 text-3xl">&times;</button>
+            </div>
+            <div id="modal-content" class="p-6 space-y-4"></div>
+        </div>
+    </div>
+
+<script type="module">
+    // --- DATABASE OF QUESTIONS (Focused on RIASEC) ---
+    const questions = [
+        { module: 'Intereses Vocacionales', type: 'scale', category: 'R', text: 'Reparar un motor o un electrodoméstico.' },
+        { module: 'Intereses Vocacionales', type: 'scale', category: 'I', text: 'Leer artículos científicos sobre nuevos descubrimientos.' },
+        { module: 'Intereses Vocacionales', type: 'scale', category: 'A', text: 'Escribir un cuento, un poema o una obra de teatro.' },
+        { module: 'Intereses Vocacionales', type: 'scale', category: 'S', text: 'Enseñar una materia a un grupo de estudiantes.' },
+        { module: 'Intereses Vocacionales', type: 'scale', category: 'E', text: 'Dirigir un equipo para alcanzar una meta.' },
+        { module: 'Intereses Vocacionales', type: 'scale', category: 'C', text: 'Organizar documentos y archivos de manera sistemática.' },
+        { module: 'Intereses Vocacionales', type: 'scale', category: 'R', text: 'Trabajar al aire libre en un proyecto de construcción.' },
+        { module: 'Intereses Vocacionales', type: 'scale', category: 'I', text: 'Resolver problemas matemáticos o lógicos complejos.' },
+        { module: 'Intereses Vocacionales', type: 'scale', category: 'A', text: 'Diseñar un logotipo o un afiche publicitario.' },
+        { module: 'Intereses Vocacionales', type: 'scale', category: 'S', text: 'Ayudar a personas a resolver sus problemas personales.' },
+        { module: 'Intereses Vocacionales', type: 'scale', category: 'E', text: 'Convencer a otras personas para que apoyen una idea.' },
+        { module: 'Intereses Vocacionales', type: 'scale', category: 'C', text: 'Trabajar con números y preparar informes financieros.' },
+        { module: 'Intereses Vocacionales', type: 'scale', category: 'R', text: 'Armar y desarmar aparatos mecánicos.' },
+        { module: 'Intereses Vocacionales', type: 'scale', category: 'I', text: 'Trabajar en un laboratorio realizando experimentos.' },
+        { module: 'Intereses Vocacionales', type: 'scale', category: 'A', text: 'Tocar un instrumento musical o componer una canción.' },
+        { module: 'Intereses Vocacionales', type: 'scale', category: 'S', text: 'Organizar un evento benéfico para la comunidad.' },
+        { module: 'Intereses Vocacionales', type: 'scale', category: 'E', text: 'Iniciar y administrar mi propio negocio.' },
+        { module: 'Intereses Vocacionales', type: 'scale', category: 'C', text: 'Seguir procedimientos y reglas establecidas con precisión.' },
+        { module: 'Intereses Vocacionales', type: 'scale', category: 'R', text: 'Cultivar una huerta o cuidar animales de granja.' },
+        { module: 'Intereses Vocacionales', type: 'scale', category: 'I', text: 'Investigar el origen de una enfermedad.' },
+        { module: 'Intereses Vocacionales', type: 'scale', category: 'A', text: 'Actuar en una obra de teatro o en una película.' },
+        { module: 'Intereses Vocacionales', type: 'scale', category: 'S', text: 'Cuidar a personas enfermas o a niños pequeños.' },
+        { module: 'Intereses Vocacionales', type: 'scale', category: 'E', text: 'Negociar un contrato o un acuerdo comercial.' },
+        { module: 'Intereses Vocacionales', type: 'scale', category: 'C', text: 'Realizar tareas que requieren atención al detalle.' },
+        { module: 'Intereses Vocacionales', type: 'scale', category: 'R', text: 'Realizar instalaciones eléctricas o de plomería.' },
+        { module: 'Intereses Vocacionales', type: 'scale', category: 'I', text: 'Analizar datos para encontrar patrones o tendencias.' },
+        { module: 'Intereses Vocacionales', type: 'scale', category: 'A', text: 'Pintar un cuadro o realizar una escultura.' },
+        { module: 'Intereses Vocacionales', type: 'scale', category: 'S', text: 'Trabajar como voluntario en una organización social.' },
+        { module: 'Intereses Vocacionales', type: 'scale', category: 'E', text: 'Vender un producto o servicio.' },
+        { module: 'Intereses Vocacionales', type: 'scale', category: 'C', text: 'Crear y mantener hojas de cálculo o bases de datos.' },
+        { module: 'Intereses Vocacionales', type: 'scale', category: 'R', text: 'Manejar maquinaria pesada o herramientas especializadas.' },
+        { module: 'Intereses Vocacionales', type: 'scale', category: 'I', text: 'Programar una aplicación de software o una página web.' },
+        { module: 'Intereses Vocacionales', type: 'scale', category: 'A', text: 'Tomar fotografías artísticas.' },
+        { module: 'Intereses Vocacionales', type: 'scale', category: 'S', text: 'Mediar en conflictos entre personas o grupos.' },
+        { module: 'Intereses Vocacionales', type: 'scale', category: 'E', text: 'Hablar en público para persuadir a una audiencia.' },
+        { module: 'Intereses Vocacionales', type: 'scale', category: 'C', text: 'Revisar documentos para corregir errores.' },
+        { module: 'Intereses Vocacionales', type: 'scale', category: 'R', text: 'Trabajar con planos, mapas o diagramas técnicos.' },
+        { module: 'Intereses Vocacionales', type: 'scale', category: 'I', text: 'Estudiar el comportamiento de los astros o los ecosistemas.' },
+        { module: 'Intereses Vocacionales', type: 'scale', category: 'A', text: 'Decorar o ambientar espacios interiores.' },
+        { module: 'Intereses Vocacionales', type: 'scale', category: 'S', text: 'Aconsejar a personas sobre sus opciones de carrera.' },
+        { module: 'Intereses Vocacionales', type: 'scale', category: 'E', text: 'Liderar una campaña política o un club estudiantil.' },
+        { module: 'Intereses Vocacionales', type: 'scale', category: 'C', text: 'Realizar el inventario de productos en un almacén.' },
+        { module: 'Intereses Vocacionales', type: 'scale', category: 'R', text: 'Participar en una expedición geológica o arqueológica.' },
+        { module: 'Intereses Vocacionales', type: 'scale', category: 'I', text: 'Usar un microscopio para estudiar microorganismos.' },
+        { module: 'Intereses Vocacionales', type: 'scale', category: 'A', text: 'Editar un video o producir un cortometraje.' },
+        { module: 'Intereses Vocacionales', type: 'scale', category: 'S', text: 'Dar un discurso para motivar a un equipo.' },
+        { module: 'Intereses Vocacionales', type: 'scale', category: 'E', text: 'Gestionar las finanzas o inversiones de una empresa.' },
+        { module: 'Intereses Vocacionales', type: 'scale', category: 'C', text: 'Realizar auditorías o controles de calidad.' },
+    ];
+
+    // --- DOM ELEMENTS ---
+    const welcomeScreen = document.getElementById('welcome-screen');
+    const testScreen = document.getElementById('test-screen');
+    const resultsScreen = document.getElementById('results-screen');
+    const startBtn = document.getElementById('start-btn');
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+    const retakeBtn = document.getElementById('retake-btn');
+    const moduleTitle = document.getElementById('module-title');
+    const progressBar = document.getElementById('progress-bar');
+    const progressText = document.getElementById('progress-text');
+    const questionContainer = document.getElementById('question-container');
+    const loadingResults = document.getElementById('loading-results');
+    const resultsContent = document.getElementById('results-content');
+    const careerModal = document.getElementById('career-modal');
+    const modalTitle = document.getElementById('modal-title');
+    const modalContent = document.getElementById('modal-content');
+    const modalCloseBtn = document.getElementById('modal-close-btn');
+    
+    // --- APP STATE ---
+    let currentQuestionIndex = 0;
+    let userAnswers = {};
+
+    // --- DESCRIPTIONS & CAREERS INFO ---
+    const riasecInfo = {
+        R: { name: 'Realista (Hacedor)', description: 'Personas que prefieren trabajar con sus manos, con herramientas, máquinas, plantas o animales. Disfrutan de actividades prácticas y resultados tangibles.' },
+        I: { name: 'Investigador (Pensador)', description: 'Personas que disfrutan resolver problemas complejos, observar, aprender e investigar. Se sienten atraídas por las ideas y el análisis.' },
+        A: { name: 'Artístico (Creador)', description: 'Personas creativas, imaginativas y originales. Les gusta expresarse de formas no estructuradas, como el arte, la música, la danza o la escritura.' },
+        S: { name: 'Social (Ayudador)', description: 'Personas que disfrutan ayudar, enseñar, y trabajar con otros. Son empáticas, cooperativas y les motiva mejorar la vida de los demás.' },
+        E: { name: 'Emprendedor (Persuasivo)', description: 'Personas que disfrutan liderar, persuadir e influir en otros. Son ambiciosas, enérgicas y les atrae el mundo de los negocios y la política.' },
+        C: { name: 'Convencional (Organizador)', description: 'Personas que prefieren trabajar con datos, seguir procedimientos y mantener todo en orden. Son detallistas, organizadas y eficientes.' }
+    };
+    
+    // --- UNA CAREER DATABASE with websites ---
+    const unaCareers = {
+        'Derecho y Ciencias Sociales': {
+            'Derecho': { riasec: ['E', 'S', 'C'], profile: 'Formado para solucionar conflictos jurídicos con conocimiento de normas, claridad de expresión, razonamiento jurídico, creatividad para interpretar y elaborar normas, y una actitud crítica e innovadora. Defiende valores como la democracia y el respeto por los derechos fundamentales.', laborField: 'Abogacía en estudios jurídicos, asesoría en empresas, magistratura judicial, función pública, diplomacia, docencia e investigación.', contact: 'dacad@der.una.py', website: 'https://www.der.una.py' },
+            'Notariado': { riasec: ['C', 'R'], profile: 'Profesional con preparación especializada para dar fe pública y formalizar actos y negocios jurídicos. Posee un sólido conocimiento del ordenamiento jurídico, capacidad para interpretar la voluntad de las partes y habilidad para la gestión de trámites registrales.', laborField: 'Ejercicio de la función notarial en escribanías públicas, asesoramiento en materia de contratos y sucesiones, cargos en la Dirección General de los Registros Públicos.', contact: 'dacad@der.una.py', website: 'https://www.der.una.py' },
+            'Ciencias Políticas': { riasec: ['S', 'E', 'I'], profile: 'Capaz de analizar, diseñar y evaluar políticas sociales. Asesora en el ámbito político, contribuye a la formación académica politológica y aborda enfoques teóricos y metodológicos de la Ciencia Política.', laborField: 'Analista político en medios de comunicación, asesor en instituciones gubernamentales y no gubernamentales, consultor para partidos políticos, investigador social, carrera diplomática.', contact: 'admin_esc@der.una.py', website: 'https://www.der.una.py' }
+        },
+        'Ciencias Médicas': {
+            'Medicina': { riasec: ['I', 'S', 'R'], profile: 'Profesional con sólida formación científica y humanista, comprometido con el bienestar integral de la persona, familia y comunidad. Actúa en la promoción de la salud, diagnóstico, tratamiento y rehabilitación, integrando avances tecnológicos y liderando equipos de salud.', laborField: 'Práctica clínica en hospitales y sanatorios (públicos y privados), centros de salud, investigación médica, docencia universitaria, gestión de servicios de salud.', contact: 'coordinacionmed@med.una.py', website: 'https://www.med.una.py' },
+            'Kinesiología y Fisioterapia': { riasec: ['R', 'S', 'I'], profile: 'Capaz de aplicar agentes kinefilácticos y electro-físicos con fines preventivos, curativos y de rehabilitación. Realiza evaluaciones funcionales para contribuir al diagnóstico y seguimiento de pacientes.', laborField: 'Centros de rehabilitación, hospitales, consultorios privados, clubes deportivos, atención domiciliaria, docencia.', contact: 'coordinacionmed@med.una.py', website: 'https://www.med.una.py' },
+            'Instrumentación y Área Quirúrgica': { riasec: ['R', 'C', 'S'], profile: 'Profesional con formación integral para asistir en procedimientos quirúrgicos. Posee conocimientos sobre técnicas, logística y gerenciamiento de quirófanos, manteniéndose actualizado con los avances tecnológicos del área.', laborField: 'Quirófanos de hospitales y sanatorios, centros de cirugía ambulatoria, empresas proveedoras de equipamiento médico-quirúrgico.', contact: 'coordinacionmed@med.una.py', website: 'https://www.med.una.py' }
+        },
+        'Ingeniería': {
+            'Ingeniería Civil': { riasec: ['R', 'I', 'C'], profile: 'Capacitado para proyectar, construir, supervisar y mantener obras hidráulicas, de vías de comunicación, urbanas y de edificación. Realiza estudios de factibilidad y administra empresas constructoras.', laborField: 'Empresas constructoras, consultoras de ingeniería, organismos públicos (MOPC, municipalidades), gestión de proyectos, peritajes y tasaciones.', contact: 'secretaria@ing.una.py', website: 'https://www.ing.una.py' },
+            'Ingeniería Industrial': { riasec: ['R', 'E', 'C'], profile: 'Profesional que diseña, mejora e instala sistemas integrados de producción de bienes y servicios. Optimiza el uso de recursos humanos, materiales y energéticos, aplicando conocimientos de ingeniería, gestión y economía.', laborField: 'Plantas industriales de todo tipo (manufactura, alimentos, etc.), empresas de servicios, logística y cadena de suministro, consultoría en procesos y calidad, gestión de operaciones.', contact: 'secretaria@ing.una.py', website: 'https://www.ing.una.py' },
+            'Ingeniería Electromecánica': { riasec: ['R', 'I'], profile: 'Capaz de operar, mantener, proyectar y construir obras que involucren máquinas, mecanismos y energía eléctrica. Trabaja en áreas de generación y uso de energía, automatización y sistemas mecánicos.', laborField: 'Industrias, empresas de energía (ANDE), talleres metalúrgicos, mantenimiento de equipos industriales, diseño de sistemas de climatización y refrigeración.', contact: 'secretaria@ing.una.py', website: 'https://www.ing.una.py' },
+            'Ingeniería Electrónica': { riasec: ['I', 'R'], profile: 'Desarrolla proyectos de diseño, implementación y mantenimiento de sistemas electrónicos en áreas como telecomunicaciones, control industrial, bioingeniería e inteligencia computacional. Puede gerenciar empresas del ramo.', laborField: 'Empresas de telecomunicaciones, automatización industrial, desarrollo de software y hardware, equipos médicos, investigación y desarrollo (I+D).', contact: 'citec@ing.una.py', website: 'https://www.ing.una.py' },
+            'Ingeniería Geográfica y Ambiental': { riasec: ['R', 'I'], profile: 'Realiza el reconocimiento, medición y representación del espacio territorial. Proyecta y ejecuta levantamientos catastrales, gestiona recursos naturales y evalúa el impacto ambiental de proyectos.', laborField: 'Catastro, organismos ambientales (MADES), empresas de consultoría ambiental, planificación territorial, sistemas de información geográfica (SIG).', contact: 'secretaria@ing.una.py', website: 'https://www.ing.una.py' },
+            'Ingeniería Mecánica': { riasec: ['R', 'I'], profile: 'Profesional con habilidades para definir y resolver problemas de ingeniería mecánica, diseñando y manteniendo sistemas mecánicos, térmicos y de fluidos. Es sensible a los problemas técnicos y sociales de la profesión.', laborField: 'Industria metalmecánica, automotriz, sector energético, diseño de maquinaria, mantenimiento industrial, consultoría.', contact: 'secretaria@ing.una.py', website: 'https://www.ing.una.py' },
+            'Ingeniería Mecatrónica': { riasec: ['R', 'I'], profile: 'Diseña y construye dispositivos y sistemas mecatrónicos, automatiza procesos industriales e integra equipos de trabajo para desarrollar y emplear nueva tecnología de manera ética y responsable.', laborField: 'Industria de automatización y robótica, manufactura avanzada, diseño de productos inteligentes, sector automotriz y aeroespacial.', contact: 'citec@ing.una.py', website: 'https://www.ing.una.py' }
+        },
+        'Ciencias Económicas': {
+            'Economía': { riasec: ['I', 'E', 'C'], profile: 'Capaz de proponer estrategias de desarrollo económico, asesorar en el sector fiscal y monetario, realizar investigaciones científicas sobre la realidad económica y liderar organizaciones públicas y privadas.', laborField: 'Banca Central, Ministerio de Hacienda, bancos privados, consultoría económica, organismos internacionales, investigación y docencia.', contact: 'dacademica@eco.una.py', website: 'https://www.eco.una.py' },
+            'Administración': { riasec: ['E', 'C', 'S'], profile: 'Profesional que lidera los procesos de planeación, organización, dirección y control en una empresa. Crea y desarrolla sus propias empresas, ejerce consultoría y se posiciona a la vanguardia de la gestión.', laborField: 'Gerencia en empresas de todos los sectores (comercial, industrial, servicios), consultoría de gestión, emprendimiento propio, administración de recursos humanos, finanzas.', contact: 'dacademica@eco.una.py', website: 'https://www.eco.una.py' },
+            'Contaduría Pública': { riasec: ['C', 'E'], profile: 'Experto en contabilidad, auditoría, finanzas y área fiscal. Produce información financiera, propone estrategias de desarrollo empresarial y se desempeña como asesor de negocios, observando la ética y la responsabilidad social.', laborField: 'Estudios contables y de auditoría, departamentos de contabilidad y finanzas en empresas, peritajes contables, sector público (Subsecretaría de Tributación), docencia.', contact: 'dacademica@eco.una.py', website: 'https://www.eco.una.py' }
+        },
+        'Odontología': {
+            'Odontología': { riasec: ['R', 'I', 'S'], profile: 'Profesional preparado para diagnosticar y tratar patologías de la cavidad bucal, planificar programas preventivos y aplicar técnicas de esterilización y bioseguridad. Actúa con ética y destreza manual.', laborField: 'Consultorio privado, servicios de salud pública, clínicas odontológicas, docencia e investigación.', contact: 'fo@odo.una.py', website: 'https://www.odo.una.py' }
+        },
+        'Ciencias Químicas': {
+            'Farmacia': { riasec: ['I', 'R', 'C'], profile: 'Capacitado en el diseño, síntesis, control y evaluación de fármacos y medicamentos. Ejerce la gestión de calidad en la industria farmacéutica y brinda atención farmacéutica promoviendo el uso racional de medicamentos.', laborField: 'Farmacias comunitarias y hospitalarias, industria farmacéutica (producción, control de calidad, desarrollo), dirección técnica, farmacovigilancia.', contact: 'secgen@qui.una.py', website: 'https://www.qui.una.py' },
+            'Bioquímica': { riasec: ['I', 'R'], profile: 'Diseña, ejecuta e interpreta análisis químico-biológicos de interés clínico, toxicológico, forense y ambiental. Ejerce la dirección técnica de laboratorios y participa en investigaciones científicas.', laborField: 'Laboratorios de análisis clínicos, industria alimentaria, laboratorios de toxicología y forenses, investigación, control de calidad.', contact: 'secgen@qui.una.py', website: 'https://www.qui.una.py' },
+            'Ingeniería Química': { riasec: ['I', 'R'], profile: 'Diseña, instala, opera y optimiza procesos de producción industrial. Elabora proyectos de factibilidad, gestiona la calidad y el tratamiento de residuos, y puede ejercer consultoría y docencia.', laborField: 'Industria química, petroquímica, de alimentos, farmacéutica. Consultoría en ingeniería de procesos, gestión ambiental, seguridad industrial.', contact: 'secgen@qui.una.py', website: 'https://www.qui.una.py' },
+            'Ingeniería de Alimentos': { riasec: ['R', 'I', 'C'], profile: 'Proyecta, calcula y controla instalaciones y procesos para la fabricación, transformación y envasado de alimentos. Investiga y desarrolla nuevas técnicas y productos, asegurando la calidad e inocuidad.', laborField: 'Industria alimentaria (producción, control de calidad, I+D), organismos de control de alimentos, consultoría, desarrollo de nuevos productos.', contact: 'secgen@qui.una.py', website: 'https://www.qui.una.py' },
+            'Química Industrial': { riasec: ['I', 'R', 'C'], profile: 'Evalúa y diseña métodos de análisis de productos industriales. Ejerce el control de producción y aplica normativas en materias primas y productos, participando en el desarrollo de tecnologías y la gestión ambiental.', laborField: 'Industrias (química, alimentaria, cosmética), laboratorios de control de calidad, gestión ambiental, asesoría técnica.', contact: 'secgen@qui.una.py', website: 'https://www.qui.una.py' },
+            'Ciencia y Tecnología de Alimentos': { riasec: ['I', 'R', 'C'], profile: 'Dirige y supervisa procesos de manejo, conservación y transformación de alimentos, asegurando la calidad. Desarrolla nuevos productos y aplica la legislación alimentaria vigente.', laborField: 'Industria alimentaria, laboratorios de análisis de alimentos, agencias de regulación, investigación y desarrollo, consultoría en calidad e inocuidad.', contact: 'secgen@qui.una.py', website: 'https://www.qui.una.py' },
+            'Nutrición': { riasec: ['S', 'I'], profile: 'Profesional que realiza atención dietética y dietoterapéutica, planifica unidades de alimentación, formula políticas de nutrición y realiza investigación en el área. Promueve una alimentación saludable.', laborField: 'Hospitales y clínicas, consultorios privados, servicios de alimentación colectiva (comedores), salud pública, industria alimentaria, docencia.', contact: 'secgen@qui.una.py', website: 'https://www.qui.una.py' }
+        },
+        'Filosofía': {
+            'Filosofía': { riasec: ['I', 'A', 'S'], profile: 'Capaz de pensar creativa y críticamente, investigar con rigor, interpretar la tradición filosófica y ejercer la docencia. Asesora en planes de investigación y promueve el diálogo y la razón.', laborField: 'Docencia universitaria y de nivel medio, investigación, edición y crítica de textos, asesoría en comités de ética, periodismo cultural.', contact: 'sacademic@fil.una.py', website: 'https://www.fil.una.py' },
+            'Letras': { riasec: ['A', 'I', 'S'], profile: 'Posee conocimientos profundos de la lengua castellana y la literatura. Realiza producción intelectual (ensayo, crítica, creación), ejerce la docencia y aplica técnicas de investigación en lingüística y literatura.', laborField: 'Docencia, corrección de estilo, edición, crítica literaria, creación literaria, investigación lingüística.', contact: 'sacademic@fil.una.py', website: 'https://www.fil.una.py' },
+            'Historia': { riasec: ['I', 'S'], profile: 'Profesional con capacidad para ejercer la docencia, investigar los acontecimientos presentes y pasados con espíritu crítico y razonamiento lógico.', laborField: 'Docencia, investigación histórica, archivística, museología, asesoría en patrimonio cultural.', contact: 'sacademic@fil.una.py', website: 'https://www.fil.una.py' },
+            'Psicología': { riasec: ['S', 'I'], profile: 'Capaz de operar con actitud científica en el campo de la conducta, aplicando métodos y técnicas para la prevención y conservación de la salud mental en áreas como clínica, laboral, educacional, comunitaria o jurídica.', laborField: 'Consultorios, hospitales, empresas (RR.HH.), instituciones educativas, ONGs, sistema judicial, investigación social.', contact: 'sacademic@fil.una.py', website: 'https://www.fil.una.py' },
+            'Ciencias de la Comunicación': { riasec: ['A', 'E', 'S'], profile: 'Capacitado para reunir, relatar y comentar noticias e informaciones de actualidad para su publicación en medios de comunicación, tanto en prensa escrita, radio o televisión.', laborField: 'Periodismo, comunicación institucional en empresas y ONGs, producción audiovisual, publicidad, relaciones públicas.', contact: 'sacademic@fil.una.py', website: 'https://www.fil.una.py' },
+            'Ciencias de la Educación': { riasec: ['S', 'I', 'C'], profile: 'Orienta académica y profesionalmente a estudiantes, trabaja con eficiencia en su área de especialidad, y posee idoneidad para la gestión, planificación, evaluación y administración educativa.', laborField: 'Docencia, dirección de instituciones educativas, diseño curricular, planificación educativa en ministerios, capacitación en empresas, tecnología educativa.', contact: 'sacademic@fil.una.py', website: 'https://www.fil.una.py' },
+            'Lengua Inglesa': { riasec: ['S', 'A', 'C'], profile: 'Capacitado para ejercer la docencia en lengua inglesa, traducir textos, y diseñar materiales didácticos e instrumentos de evaluación.', laborField: 'Docencia en todos los niveles, traducción, interpretación, turismo, empresas multinacionales.', contact: 'isl-direccion@fil.una.py', website: 'https://www.fil.una.py/institutosuperiordelenguas' },
+        },
+        'Ciencias Agrarias': {
+            'Ingeniería Agronómica': { riasec: ['R', 'I'], profile: 'Capaz de manejar sistemas de producción agraria, combinando factores con eficiencia técnica y económica. Aplica conocimientos científicos para promover el desarrollo sostenible y solucionar problemas del sector.', laborField: 'Administración de establecimientos agropecuarios, empresas de insumos agrícolas, cooperativas, investigación (IPTA), extensión agraria, consultoría.', contact: 'academ@agr.una.py', website: 'https://www.agr.una.py' },
+            'Ingeniería Forestal': { riasec: ['R', 'I'], profile: 'Capacitado para manejar bosques naturales y plantaciones, desarrollar tecnologías para el aprovechamiento y transformación de productos forestales, y planificar la conservación de recursos naturales.', laborField: 'Empresas forestales, industria maderera, organismos de gestión ambiental (INFONA, MADES), manejo de áreas protegidas, proyectos de reforestación.', contact: 'academ@agr.una.py', website: 'https://www.agr.una.py' },
+            'Ingeniería en Ecología Humana': { riasec: ['S', 'I', 'R'], profile: 'Genera una visión humanista e integral del desarrollo, aplicando tecnologías adecuadas para la producción sostenible, promoviendo la seguridad alimentaria y liderando procesos de gestión integrada de recursos.', laborField: 'ONGs de desarrollo, proyectos de desarrollo rural, agencias de cooperación internacional, municipalidades (planificación social y ambiental), extensión rural.', contact: 'academ@agr.una.py', website: 'https://www.agr.una.py' },
+            'Ingeniería Ambiental': { riasec: ['I', 'R', 'S'], profile: 'Evalúa, planifica y administra los recursos naturales. Diseña tecnologías para optimizar la relación entre el uso de recursos y las necesidades humanas, y previene y mitiga impactos ambientales.', laborField: 'Consultoría ambiental, empresas industriales (gestión ambiental), organismos gubernamentales (MADES), tratamiento de efluentes y residuos, auditorías ambientales.', contact: 'academ@agr.una.py', website: 'https://www.agr.una.py' },
+            'Ingeniería Agroalimentaria': { riasec: ['R', 'I', 'C'], profile: 'Aplica conocimientos de ingeniería en el procesamiento industrial de materias primas agropecuarias y forestales. Diseña procesos innovadores, implementa sistemas de control de calidad y desarrolla nuevos productos.', laborField: 'Industria de alimentos y bebidas, control de calidad, desarrollo de productos, logística agroalimentaria, empresas de equipamiento para la industria.', contact: 'academ@agr.una.py', website: 'https://www.agr.una.py' },
+            'Lic. en Administración Agropecuaria': { riasec: ['E', 'C', 'R'], profile: 'Administra y gerencia emprendimientos agropecuarios y forestales de forma sostenible, combinando una sólida formación técnica con principios económicos y capacidad de liderazgo.', laborField: 'Administración de fincas y estancias, empresas agroexportadoras, bancos (sector agropecuario), cooperativas de producción, consultoría en agronegocios.', contact: 'academ@agr.una.py', website: 'https://www.agr.una.py' }
+        },
+        'Ciencias Veterinarias': {
+            'Ciencias Veterinarias': { riasec: ['R', 'I', 'S'], profile: 'Profesional con formación integral para actuar en salud pública, producción animal, tecnología de alimentos y control de zoonosis. Resuelve situaciones con responsabilidad social y en equilibrio con el medio ambiente.', laborField: 'Clínica de pequeños y grandes animales, producción ganadera, salud pública (SENACSA), industria alimentaria (inspección), zoológicos y reservas.', contact: 'academic@vet.una.py', website: 'https://www.vet.una.py' }
+        },
+        'Arquitectura, Diseño y Arte': {
+            'Arquitectura y Urbanismo': { riasec: ['A', 'R', 'I'], profile: 'Capaz de producir creativamente proyectos de arquitectura y urbanismo, dirigir y supervisar obras, y abordar la planificación urbana y el ordenamiento territorial, incorporando la sostenibilidad.', laborField: 'Estudios de arquitectura, empresas constructoras, desarrollo inmobiliario, planificación urbana en municipalidades y gobernaciones, diseño de interiores y paisajismo.', contact: 'direccionarq@fada.una.py', website: 'https://www.fada.una.py' },
+            'Lic. en Artes Visuales': { riasec: ['A', 'I'], profile: 'Capacitado para desenvolverse como artista visual, investigador y teórico de la cultura. Puede continuar estudios de postgrado y actuar como crítico o docente de artes plásticas.', laborField: 'Producción artística, curaduría de exposiciones, gestión cultural, docencia, crítica de arte, ilustración.', contact: 'infisa@fada.una.py', website: 'https://www.fada.una.py' },
+            'Lic. en Diseño de Indumentaria Escénica y Urbana': { riasec: ['A', 'R', 'E'], profile: 'Diseña y crea vestuarios para espectáculos, indumentaria urbana, industrial y deportiva. Se desenvuelve como diseñador creativo e investigador de fenómenos culturales relacionados a la moda.', laborField: 'Diseño de moda, vestuario para teatro, cine y TV, producción de moda, estilismo, diseño textil.', contact: 'infisa@fada.una.py', website: 'https://www.fada.una.py' },
+            'Lic. en Diseño Industrial': { riasec: ['A', 'R', 'I'], profile: 'Analiza, interpreta y resuelve problemas de interface entre el hombre y su entorno objetual, diseñando productos, sistemas de identidad visual (gráfico) y envases, con una profunda conciencia crítica y ética.', laborField: 'Diseño de productos, diseño gráfico, agencias de publicidad, diseño de packaging, diseño de mobiliario, branding.', contact: 'oottaviano478@fada.una.py', website: 'https://www.fada.una.py' },
+            'Lic. en Música': { riasec: ['A', 'S'], profile: 'Desarrolla competencias para desempeñarse con solvencia en áreas como educación musical, interpretación de un instrumento, dirección coral/orquestal o investigación, liderando procesos de desarrollo musical.', laborField: 'Músico intérprete, docente de música, director de coro u orquesta, compositor, arreglista, investigador musicológico.', contact: 'limus.info@fada.una.py', website: 'https://www.fada.una.py' },
+            'Lic. en Danza': { riasec: ['A', 'R', 'S'], profile: 'Profesional capaz de enfrentar desafíos en interpretación, creación y producción artística en danza. Articula los campos de la educación y el arte, y produce nuevos conocimientos y tecnologías educacionales.', laborField: 'Bailarín profesional, coreógrafo, director de compañías de danza, docente de danza, gestión de proyectos culturales de danza.', contact: 'nfuster@fada.una.py', website: 'https://www.fada.una.py' }
+        },
+        'Politécnica': {
+            'Ingeniería en Informática': { riasec: ['I', 'R', 'C'], profile: 'Planifica, diseña e implementa proyectos informáticos, evaluando arquitecturas de sistemas y redes. Aplica sus conocimientos de forma innovadora con una visión humanística y crítica.', laborField: 'Desarrollo de software, administración de redes y servidores, ciberseguridad, gestión de proyectos de TI, consultoría tecnológica, inteligencia de negocios.', contact: 'sec.academica@pol.una.py', website: 'https://www.pol.una.py' },
+            'Lic. en Ciencias Informáticas': { riasec: ['I', 'C', 'R'], profile: 'Con énfasis en Análisis de Sistemas o Programación, incorpora tecnología para resolver problemas de información, desarrollando aplicaciones o colaborando en decisiones estratégicas sobre sistemas.', laborField: 'Análisis y diseño de sistemas, desarrollo de aplicaciones web y móviles, administración de bases de datos, testing y QA.', contact: 'sec.academica@pol.una.py', website: 'https://www.pol.una.py' },
+            'Ingeniería en Marketing': { riasec: ['E', 'A', 'S'], profile: 'Profesional de la gestión empresarial que domina modernas teorías y técnicas de marketing. Investiga el entorno, diseña e implanta planes estratégicos y gestiona las variables del mercado.', laborField: 'Gerencia de marketing, jefatura de producto, investigación de mercados, publicidad, marketing digital, gestión de ventas.', contact: 'sec.academica@pol.una.py', website: 'https://www.pol.una.py' },
+            'Lic. en Gestión de la Hospitalidad': { riasec: ['E', 'S', 'R'], profile: 'Con énfasis en Gastronomía, Hotelería o Turismo, es un profesional versátil capaz de organizar, administrar y operar empresas del sector, con un enfoque en la calidad del servicio y la gestión eficiente.', laborField: 'Gerencia de hoteles, restaurantes y agencias de viajes; organización de eventos; consultoría turística; gestión de alimentos y bebidas.', contact: 'sec.academica@pol.una.py', website: 'https://www.pol.una.py' }
+        },
+        'Ciencias Exactas y Naturales': {
+            'Lic. en Ciencias (Matemática Pura)': { riasec: ['I'], profile: 'Profesional que se desempeña en investigación, docencia y consultoría. Deduce resultados nuevos, resuelve problemas de procesamiento de datos y aplica métodos matemáticos y numéricos.', laborField: 'Investigación académica, docencia universitaria, análisis de datos en finanzas o tecnología, modelado matemático.', contact: 'facen@facen.una.py', website: 'https://www.facen.una.py' },
+            'Lic. en Ciencias (Matemática Estadística)': { riasec: ['I', 'C'], profile: 'Realiza, evalúa e implementa análisis estadísticos. Diseña instrumentos de recolección de datos, crea modelos y realiza inferencias para la toma de decisiones en diversos campos.', laborField: 'Análisis de datos (data scientist), bioestadística, sector financiero (riesgos), investigación de mercado, encuestas y sondeos de opinión.', contact: 'facen@facen.una.py', website: 'https://www.facen.una.py' },
+            'Lic. en Ciencias (Química)': { riasec: ['I', 'R'], profile: 'Emplea recursos para la síntesis y formulación de productos químicos. Se desarrolla en investigación, asistencia técnica, control de calidad y gestión ambiental, trabajando en equipos multidisciplinarios.', laborField: 'Industria química, farmacéutica y de alimentos; laboratorios de control de calidad; análisis ambiental; investigación y docencia.', contact: 'facen@facen.una.py', website: 'https://www.facen.una.py' },
+            'Lic. en Ciencias (Física)': { riasec: ['I', 'R'], profile: 'Resuelve problemas de forma analítica, modela situaciones complejas y trabaja en forma interdisciplinaria en áreas como medicina, geología e ingeniería. Ejerce la docencia y la investigación.', laborField: 'Investigación, docencia, física médica, geofísica, meteorología, sector energético, desarrollo de tecnología.', contact: 'facen@facen.una.py', website: 'https://www.facen.una.py' },
+            'Lic. en Ciencias (Geología)': { riasec: ['I', 'R'], profile: 'Estudia el origen, historia y composición de la Tierra. Se dedica a la búsqueda de recursos minerales y energéticos, estudios de aguas, y aplicaciones en obras civiles y medio ambiente.', laborField: 'Minería, exploración de petróleo y gas, hidrogeología, geotecnia para obras civiles, consultoría ambiental, investigación.', contact: 'facen@facen.una.py', website: 'https://www.facen.una.py' },
+            'Lic. en Ciencias (Biología)': { riasec: ['I', 'R'], profile: 'Genera conocimientos en biología pura y aplicada. Formula estrategias en medio ambiente, conservación, salud y biotecnología para el mejor aprovechamiento de los recursos naturales.', laborField: 'Investigación, gestión ambiental, manejo de áreas protegidas, biotecnología, laboratorios de análisis biológicos, docencia.', contact: 'facen@facen.una.py', website: 'https://www.facen.una.py' },
+            'Lic. en Biotecnología': { riasec: ['I', 'R'], profile: 'Participa en el desarrollo de productos por manipulación genética, controla la calidad en industrias biotecnológicas y diseña procesos en áreas de ganadería, salud, industria y biorremediación.', laborField: 'Industria farmacéutica, agroindustria, laboratorios de diagnóstico molecular, centros de investigación, empresas de biorremediación.', contact: 'facen@facen.una.py', website: 'https://www.facen.una.py' }
+        },
+        'Enfermería y Obstetricia': {
+            'Enfermería': { riasec: ['S', 'R', 'I'], profile: 'Profesional con capacidad científica, técnica y actitud humanística para brindar atención integral en salud, educación, administración e investigación, asumiendo el cuidado de personas, familias y comunidades.', laborField: 'Hospitales, sanatorios, centros de salud, atención domiciliaria, gestión de servicios de enfermería, docencia.', contact: 'decanato@fenob.una.py', website: 'https://www.fenob.una.py' },
+            'Obstetricia': { riasec: ['S', 'R', 'I'], profile: 'Atiende las necesidades de Salud Sexual y Reproductiva de las personas, especialmente de la mujer en su ciclo vital, y la salud del recién nacido, con un enfoque integral y humanizado.', laborField: 'Maternidades, hospitales, centros de salud, consultorios de obstetricia, programas de salud sexual y reproductiva, docencia.', contact: 'decanato@fenob.una.py', website: 'https://www.fenob.una.py' }
+        },
+        'Ciencias Sociales': {
+            'Trabajo Social': { riasec: ['S', 'E'], profile: 'Profesional que interviene en las relaciones entre sujetos sociales y el Estado, promoviendo la transformación social, la democracia, la autonomía y el ejercicio de los derechos humanos y la justicia social.', laborField: 'ONGs, instituciones públicas (Ministerios, Municipalidades), sistema de justicia, empresas (responsabilidad social), programas sociales.', contact: 'decanato@facso.una.py', website: 'https://www.facso.una.py' },
+            'Sociología': { riasec: ['I', 'S'], profile: 'Profesional pensador crítico, capaz de traducir hechos sociales en ideas sistematizadas. Observa, conceptualiza y estructura la realidad social mediante metodologías y teorías de las ciencias sociales.', laborField: 'Investigación social, análisis de políticas públicas, consultoría para organismos nacionales e internacionales, docencia, análisis de opinión pública.', contact: 'decanato@facso.una.py', website: 'https://www.facso.una.py' }
+        }
+    };
+
+
+    // --- FUNCTIONS ---
+
+    function startTest() {
+        currentQuestionIndex = 0;
+        userAnswers = {};
+        welcomeScreen.classList.add('hidden');
+        resultsScreen.classList.add('hidden');
+        testScreen.classList.remove('hidden');
+        displayQuestion();
+    }
+
+    function displayQuestion() {
+        const question = questions[currentQuestionIndex];
+        moduleTitle.textContent = question.module;
+        
+        const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
+        progressBar.style.width = `${progress}%`;
+        progressText.textContent = `Pregunta ${currentQuestionIndex + 1} de ${questions.length}`;
+
+        let html = `<h3 class="text-xl md:text-2xl font-semibold mb-6">${currentQuestionIndex + 1}. ${question.text}</h3>`;
+        
+        const labels = ['Me desagrada mucho', 'Me desagrada un poco', 'Me es indiferente', 'Me agrada un poco', 'Me agrada mucho'];
+        html += `<div class="flex flex-wrap justify-around items-center gap-4">`;
+        for (let i = 1; i <= 5; i++) {
+            const isChecked = userAnswers[currentQuestionIndex] === i;
+            html += `
+                <label for="q${i}" class="flex flex-col items-center space-y-2 cursor-pointer p-2 rounded-lg w-24 ${isChecked ? 'bg-red-100 ring-2 ring-red-400' : 'hover:bg-gray-100'}">
+                    <input type="radio" id="q${i}" name="answer" value="${i}" class="custom-radio" ${isChecked ? 'checked' : ''}>
+                    <span class="text-center text-sm text-gray-600">${i}<br>${labels[i-1]}</span>
+                </label>
+            `;
+        }
+        html += `</div>`;
+        
+        questionContainer.innerHTML = html;
+        questionContainer.classList.remove('animate-fade-in');
+        void questionContainer.offsetWidth;
+        questionContainer.classList.add('animate-fade-in');
+
+        prevBtn.style.visibility = currentQuestionIndex === 0 ? 'hidden' : 'visible';
+        nextBtn.textContent = currentQuestionIndex === questions.length - 1 ? 'Finalizar Test' : 'Siguiente';
+    }
+    
+    function saveAnswer() {
+        const selected = document.querySelector('input[name="answer"]:checked');
+        if (selected) {
+            userAnswers[currentQuestionIndex] = parseInt(selected.value);
+        }
+    }
+
+    function next() {
+        saveAnswer();
+        if (currentQuestionIndex < questions.length - 1) {
+             setTimeout(() => {
+                currentQuestionIndex++;
+                displayQuestion();
+            }, 200);
+        } else {
+            finishTest();
+        }
+    }
+
+    function prev() {
+        if (currentQuestionIndex > 0) {
+            saveAnswer();
+            currentQuestionIndex--;
+            displayQuestion();
+        }
+    }
+    
+    function finishTest() {
+        testScreen.classList.add('hidden');
+        resultsScreen.classList.remove('hidden');
+        loadingResults.classList.remove('hidden');
+        resultsContent.classList.add('hidden');
+
+        setTimeout(() => {
+            calculateAndDisplayResults();
+            loadingResults.classList.add('hidden');
+            resultsContent.classList.remove('hidden');
+            resultsContent.classList.add('animate-fade-in');
+        }, 1500);
+    }
+
+    function calculateAndDisplayResults() {
+        const riasecScores = { R: 0, I: 0, A: 0, S: 0, E: 0, C: 0 };
+        for (let i = 0; i < questions.length; i++) {
+            if (userAnswers[i]) {
+                riasecScores[questions[i].category] += userAnswers[i];
+            }
+        }
+        const sortedRiasec = Object.entries(riasecScores).sort(([,a],[,b]) => b-a);
+        
+        const riasecResultsContainer = document.getElementById('riasec-results');
+        riasecResultsContainer.innerHTML = '';
+        
+        sortedRiasec.slice(0, 3).forEach(([code, score], index) => {
+            const info = riasecInfo[code];
+            let matchingCareers = [];
+            
+            for (const faculty in unaCareers) {
+                for (const careerName in unaCareers[faculty]) {
+                    const careerData = unaCareers[faculty][careerName];
+                    if (careerData.riasec.includes(code)) {
+                        matchingCareers.push({ faculty, careerName, ...careerData });
+                    }
+                }
+            }
+
+            // Get top 5 careers for this profile
+            const top5Careers = matchingCareers.slice(0, 5);
+            let careerButtonsHtml = top5Careers.map(c => 
+                `<button class="career-btn bg-white text-gray-700 text-sm font-semibold py-1 px-3 rounded-full border border-gray-300 hover:bg-gray-100 transition" data-faculty="${c.faculty}" data-career="${c.careerName}">${c.careerName}</button>`
+            ).join('');
+
+            riasecResultsContainer.innerHTML += `
+                <div class="bg-red-50 p-6 rounded-lg">
+                    <h3 class="text-xl font-bold main-color">${index + 1}. ${info.name}</h3>
+                    <p class="text-gray-600 mt-1 mb-4">${info.description}</p>
+                    <h4 class="font-semibold text-gray-800 mb-2">Carreras sugeridas para este perfil:</h4>
+                    <div class="flex flex-wrap gap-2">${careerButtonsHtml}</div>
+                </div>
+            `;
+        });
+
+        document.querySelectorAll('.career-btn').forEach(button => {
+            button.addEventListener('click', () => {
+                const faculty = button.dataset.faculty;
+                const career = button.dataset.career;
+                showCareerDetails(faculty, career);
+            });
+        });
+    }
+    
+    function showCareerDetails(faculty, careerName) {
+        const careerData = unaCareers[faculty]?.[careerName];
+        if (!careerData) return;
+
+        modalTitle.textContent = careerName;
+        modalContent.innerHTML = `
+            <div class="space-y-4">
+                <div>
+                    <h3 class="font-bold text-lg text-gray-700">Facultad:</h3>
+                    <p class="text-gray-600">${faculty}</p>
+                </div>
+                <div>
+                    <h3 class="font-bold text-lg text-gray-700">Perfil del Egresado:</h3>
+                    <p class="text-gray-600">${careerData.profile}</p>
+                </div>
+                <div>
+                    <h3 class="font-bold text-lg text-gray-700">Campo Laboral:</h3>
+                    <p class="text-gray-600">${careerData.laborField}</p>
+                </div>
+                <div>
+                    <h3 class="font-bold text-lg text-gray-700">Sitio Web:</h3>
+                    <a href="${careerData.website}" target="_blank" rel="noopener noreferrer" class="main-color hover:underline">${careerData.website}</a>
+                </div>
+                <div>
+                    <h3 class="font-bold text-lg text-gray-700">Contacto:</h3>
+                    <p class="text-gray-600">${careerData.contact}</p>
+                </div>
+            </div>
+        `;
+        careerModal.classList.remove('hidden');
+    }
+
+    function hideCareerDetails() {
+        careerModal.classList.add('hidden');
+    }
+
+    function retakeTest() {
+        resultsScreen.classList.add('hidden');
+        welcomeScreen.classList.remove('hidden');
+    }
+
+    // --- EVENT LISTENERS ---
+    startBtn.addEventListener('click', startTest);
+    nextBtn.addEventListener('click', next);
+    prevBtn.addEventListener('click', prev);
+    retakeBtn.addEventListener('click', retakeTest);
+    questionContainer.addEventListener('change', (event) => {
+        if (event.target.type === 'radio') {
+            saveAnswer();
+            next();
+        }
+    });
+    modalCloseBtn.addEventListener('click', hideCareerDetails);
+    careerModal.addEventListener('click', (event) => {
+        if (event.target === careerModal) {
+            hideCareerDetails();
+        }
+    });
+
+</script>
+</body>
+</html>
